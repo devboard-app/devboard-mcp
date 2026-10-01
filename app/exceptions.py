@@ -24,6 +24,11 @@ class ServiceUnavailableException(Exception):
     pass
 
 
+##LOGIN
+class LoginFailedException(Exception):
+    pass
+
+
 ##OTHER
 class UnexpectedException(Exception):
     pass

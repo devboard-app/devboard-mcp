@@ -7,5 +7,6 @@ class Settings(BaseSettings):
     HTTP_TIMEOUT: int
     PUBLIC_URL: str = "http://localhost:18009"
     REDIS_URL: str
+    AUTH_URL: str
 
 settings = Settings()  # type: ignore

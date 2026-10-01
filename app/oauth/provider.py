@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from mcp.server.auth.provider import (
     AccessToken,
     AuthorizationParams,
@@ -6,8 +8,9 @@ from mcp.server.auth.provider import (
 )
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 
+from app.config import settings
 from app.oauth import store
-from app.oauth.models import DevBoardAuthorizationCode
+from app.oauth.models import DevBoardAuthorizationCode, PendingAuthorization
 
 
 class DevBoardOAuthProvider(
@@ -27,7 +30,11 @@ class DevBoardOAuthProvider(
     async def authorize(
         self, client: OAuthClientInformationFull, params: AuthorizationParams
     ) -> str:
-        raise NotImplementedError("Step 3")
+        session_id = await store.save_pending(
+            PendingAuthorization(client_id=client.client_id, params=params)
+        )
+        query = urlencode({"session": session_id})
+        return f"{settings.PUBLIC_URL.rstrip('/')}/login?{query}"
 
     async def load_authorization_code(
         self, client: OAuthClientInformationFull, authorization_code: str

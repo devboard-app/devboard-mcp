@@ -1,4 +1,5 @@
-import app.tools.tickets  # noqa
+import app.oauth.routes # noqa
+import app.tools.tickets
 import logging
 from contextlib import asynccontextmanager
 

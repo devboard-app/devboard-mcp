@@ -3,6 +3,7 @@ import uuid
 
 import httpx
 
+from app.clients.common import response_detail
 from app.config import settings
 from app.exceptions import (
     ForbiddenException,
@@ -14,15 +15,6 @@ from app.exceptions import (
 from app.http_client import get_http_client
 
 logger = logging.getLogger(__name__)
-
-
-def _detail(response: httpx.Response) -> str | None:
-    try:
-        body = response.json()
-    except ValueError:
-        return None
-    detail = body.get("detail") if isinstance(body, dict) else None
-    return detail if isinstance(detail, str) else None
 
 
 async def _request(
@@ -48,9 +40,9 @@ async def _request(
     if status == 403:
         raise ForbiddenException()
     if status == 404:
-        raise NotFoundException(_detail(response))
+        raise NotFoundException(response_detail(response))
     if status in (400, 409, 422):
-        raise InvalidRequestException(_detail(response))
+        raise InvalidRequestException(response_detail(response))
     logger.error("Work service returnded %s for GET %s", status, path)
     raise ServiceUnavailableException()
 
