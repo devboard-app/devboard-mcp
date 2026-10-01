@@ -29,6 +29,10 @@ class LoginFailedException(Exception):
     pass
 
 
+class RefreshRejectedException(Exception):
+    pass
+
+
 ##OTHER
 class UnexpectedException(Exception):
     pass
