@@ -1,3 +1,4 @@
+import app.tools.tickets  # noqa
 import logging
 from contextlib import asynccontextmanager
 
