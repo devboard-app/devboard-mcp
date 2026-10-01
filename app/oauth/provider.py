@@ -1,24 +1,28 @@
 from mcp.server.auth.provider import (
     AccessToken,
-    AuthorizationCode,
     AuthorizationParams,
     OAuthAuthorizationServerProvider,
     RefreshToken,
 )
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 
+from app.oauth import store
+from app.oauth.models import DevBoardAuthorizationCode
+
 
 class DevBoardOAuthProvider(
-    OAuthAuthorizationServerProvider[AuthorizationCode, RefreshToken, AccessToken]
+    OAuthAuthorizationServerProvider[
+        DevBoardAuthorizationCode, RefreshToken, AccessToken
+    ]
 ):
     def __init__(self) -> None:
         self._clients: dict[str, OAuthClientInformationFull] = {}
 
     async def get_client(self, client_id: str) -> OAuthClientInformationFull | None:
-        return self._clients.get(client_id)
+        return await store.get_client(client_id)
 
     async def register_client(self, client_info: OAuthClientInformationFull) -> None:
-        self._clients[client_info.client_id] = client_info
+        await store.save_client(client_info)
 
     async def authorize(
         self, client: OAuthClientInformationFull, params: AuthorizationParams
@@ -27,11 +31,13 @@ class DevBoardOAuthProvider(
 
     async def load_authorization_code(
         self, client: OAuthClientInformationFull, authorization_code: str
-    ) -> AuthorizationCode | None:
+    ) -> DevBoardAuthorizationCode | None:
         raise NotImplementedError("Step 4")
 
     async def exchange_authorization_code(
-        self, client: OAuthClientInformationFull, authorization_code: AuthorizationCode
+        self,
+        client: OAuthClientInformationFull,
+        authorization_code: DevBoardAuthorizationCode,
     ) -> OAuthToken:
         raise NotImplementedError("Step 4")
 
